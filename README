@@ -1,0 +1,15 @@
+ClusterMonitor
+==============
+
+ClusterMonitor monitors a cluster of computers and determines, based on load,
+when machines can be taken online or brought offline. This is particularly
+useful when dealing with cloud applications where servers can be rented hourly
+and excess server capacity is a waste of money.
+
+Usage
+-----
+
+In order to ensure compatability with a number of systems, all interactions with
+the servers and their hosts (in the case of VM's or cloud computing) are
+abstracted out. In order for ClusterMonitor to work for you, you must implement
+ClusterInterface and provide the necessary functionality.
