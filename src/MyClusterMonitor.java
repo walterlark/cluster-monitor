@@ -1,8 +1,11 @@
+import clustermonitor.ClusterMonitor;
 
 public class MyClusterMonitor {
 
 	public static void main(String[] args) {
-		System.out.println("Hello, World!");
+
+		ClusterMonitor monitor = new ClusterMonitor();
+
 	}
 
 }
