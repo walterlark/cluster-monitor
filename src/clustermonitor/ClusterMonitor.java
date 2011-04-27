@@ -1,6 +1,7 @@
 package clustermonitor;
 
 import java.util.HashMap;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * Despite the lack of a plural name, this class will manage as many clusters of
@@ -17,23 +18,62 @@ public class ClusterMonitor {
 	 * Hold the clusters active in the system.
 	 */
 	private HashMap<String, Cluster> _clusters;
+	private AtomicBoolean _running;
+	private Object _runLock;
 
 	public ClusterMonitor() {
 		_clusters = new HashMap<String, Cluster>();
+		_running = new AtomicBoolean(false);
+		_runLock = new Object();
 	}
 
 	/**
-	 * Start the manager.
+	 * Start the manager. This function will block forever. Call
+	 * stopManager to stop it from executing.
 	 */
 	public void startManager() {
+
 		System.out.println("Starting the manager.");
+
+		// ensure stop manager wont return until it grabs this lock
+		synchronized(_runLock) {
+
+			_running.set(true);
+
+			while (_running.get()) {
+
+				System.out.println("Checking on all clusters...");
+				
+				for (Cluster c : _clusters.values()) {
+					PerformanceMetrics pm = new PerformanceMetrics("load-1", "free-memory");
+					c.getPerformanceMetrics(pm);
+					System.out.println(pm);
+				}
+				
+				try {
+					Thread.sleep(ClusterMonitorConstants.MONITOR_INTERVAL);
+				} catch (InterruptedException e) {
+					// not a huge deal...as long as it rarely happens
+				}
+			}
+
+		}
 	}
 
 	/**
-	 * Stop the manager.
+	 * This function will stop the manager, blocking until it
+	 * is sure that it has finished running.
 	 */
 	public void stopManager() {
-		System.out.println("Stopping the manager.");
+
+		System.out.println("Stopping manager...");
+		
+		_running.set(false);
+		
+		// ensure we don't return until finished running
+		synchronized(_runLock) {
+			return;
+		}
 	}
 
 	/**
@@ -53,7 +93,9 @@ public class ClusterMonitor {
 
 	private Cluster addCluster(String clusterName) {
 		if (!_clusters.containsKey(clusterName)) {
-			return _clusters.put(clusterName, new Cluster(clusterName));
+			Cluster c = new Cluster(clusterName);
+			_clusters.put(clusterName, c);
+			return c;
 		} else {
 			return _clusters.get(clusterName);
 		}

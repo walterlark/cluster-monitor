@@ -2,12 +2,12 @@ package clustermonitor;
 
 import java.util.ArrayList;
 
-public class Cluster {
+public class Cluster implements Monitorable {
 
 	private ArrayList<Server> _servers;
 	private String _clusterName;
 
-	public Cluster(String clusterName) {
+	Cluster(String clusterName) {
 
 		_clusterName = clusterName;
 
@@ -15,7 +15,7 @@ public class Cluster {
 		_servers = new ArrayList<Server>();
 	}
 
-	public void addServer(Server server) {
+	void addServer(Server server) {
 
 		if (!_servers.contains(server)) {
 			_servers.add(server);
@@ -23,9 +23,26 @@ public class Cluster {
 
 	}
 
-	public String getName() {
+	String getName() {
 		return this._clusterName;
 	}
+	
+	int getServerCount() {
+		return _servers.size();
+	}
+	
+	int getActiveServerCount() {
+		int count = 0;
+		for (Server s : _servers) {
+			if (s.isActive()) {
+				count ++;
+			}
+		}
+		return count;
+	}
+	
+	
+	
 
 	@Override
 	public int hashCode() {
@@ -51,5 +68,15 @@ public class Cluster {
 		} else if (!_clusterName.equals(other._clusterName))
 			return false;
 		return true;
+	}
+
+	@Override
+	public void getPerformanceMetrics(PerformanceMetrics performanceMetrics) {
+		
+		// get performance metrics for all servers in cluster
+		for (Server s : _servers) {
+			s.getPerformanceMetrics(performanceMetrics);
+		}
+		
 	}
 }

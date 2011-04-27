@@ -8,7 +8,7 @@ package clustermonitor;
  * @author Walter
  * 
  */
-public class Server {
+public class Server implements Monitorable {
 
 	/**
 	 * Whether or not this server is currently running.
@@ -50,6 +50,10 @@ public class Server {
 							// case
 		_handle = handle;
 	}
+	
+	boolean isActive() {
+		return (_isRunning && _isEnabled);
+	}
 
 	@Override
 	public int hashCode() {
@@ -82,6 +86,12 @@ public class Server {
 		} else if (!_serverName.equals(other._serverName))
 			return false;
 		return true;
+	}
+
+	@Override
+	public void getPerformanceMetrics(PerformanceMetrics performanceMetrics) {
+		// TODO Auto-generated method stub
+		_handle.getPerformanceMetrics(performanceMetrics);
 	}
 
 }

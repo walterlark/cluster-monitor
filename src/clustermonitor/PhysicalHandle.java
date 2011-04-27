@@ -8,7 +8,7 @@ package clustermonitor;
  * @author Walter
  * 
  */
-public interface PhysicalHandle {
+public interface PhysicalHandle extends Monitorable {
 
 	/**
 	 * Get a string representation of the server name.
@@ -72,16 +72,4 @@ public interface PhysicalHandle {
 	 */
 	public void disableServer();
 
-	/**
-	 * Return the current load for this server, or NO_LOAD if the load cannot be
-	 * acquired at this time. Though {@link ClusterMonitor} will be smoothing
-	 * and averaging of load internally, it is probably best to not use
-	 * instantaneous load, but rather the 1 minute average value returned by the
-	 * standard program "top."
-	 * 
-	 * @return the load of the server normalized by the number of CPUs in the
-	 *         machine (so 1 should be max sustainable load, even on a 4 CPU
-	 *         machine) or NO_LOAD if load is not obtainable
-	 */
-	public double getLoadForServer();
 }
