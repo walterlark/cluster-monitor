@@ -1,4 +1,4 @@
-package cluster_monitor;
+package clustermonitor;
 
 public class ClusterMonitor {
 
