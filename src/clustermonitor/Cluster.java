@@ -75,6 +75,8 @@ public class Cluster implements Monitorable {
 		
 		// get performance metrics for all servers in cluster
 		for (Server s : _servers) {
+			
+			// TODO: average the metrics coming back into one cluster-wide data set
 			s.getPerformanceMetrics(performanceMetrics);
 		}
 		
