@@ -3,6 +3,9 @@ package clustermonitor;
 import java.util.HashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import clustermonitor.Rule.Action;
+import clustermonitor.Rule.Comparison;
+
 /**
  * Despite the lack of a plural name, this class will manage as many clusters of
  * computers as is desired. When adding servers, both the cluster name and
@@ -18,42 +21,51 @@ public class ClusterMonitor {
 	 * Hold the clusters active in the system.
 	 */
 	private HashMap<String, Cluster> _clusters;
+	private HashMap<String, PerformanceMetrics> _clusterMetrics;
 	private AtomicBoolean _running;
 	private Object _runLock;
 
 	public ClusterMonitor() {
 		_clusters = new HashMap<String, Cluster>();
+		_clusterMetrics = new HashMap<String, PerformanceMetrics>();
 		_running = new AtomicBoolean(false);
 		_runLock = new Object();
 	}
 
 	/**
-	 * Start the manager. This function will block forever. Call
-	 * stopManager to stop it from executing.
+	 * Start the monitor. This function will block until stopMonitor is called.
 	 */
-	public void startManager() {
+	public void startMonitor() {
 
-		System.out.println("Starting the manager.");
+		System.out.println("Starting the monitor.");
 
 		// ensure stop manager wont return until it grabs this lock
-		synchronized(_runLock) {
+		synchronized (_runLock) {
 
 			_running.set(true);
 
 			while (_running.get()) {
 
 				System.out.println("Checking on all clusters...");
-				
+
 				for (Cluster c : _clusters.values()) {
-					PerformanceMetrics pm = new PerformanceMetrics("load-1", "free-memory");
-					c.getPerformanceMetrics(pm);
-					System.out.println(pm);
+
+					if (_clusterMetrics.containsKey(c.getName())) {
+						PerformanceMetrics pm = new PerformanceMetrics(
+								_clusterMetrics.get(c.getName()));
+						c.getPerformanceMetrics(pm);
+						System.out.println(pm);
+					} else {
+						System.err
+								.println("No available metrics set for cluster "
+										+ c.getName());
+					}
 				}
-				
+
 				try {
 					Thread.sleep(ClusterMonitorConstants.MONITOR_INTERVAL);
 				} catch (InterruptedException e) {
-					// not a huge deal...as long as it rarely happens
+					// not a huge deal...as long as it rarely/never happens
 				}
 			}
 
@@ -61,18 +73,60 @@ public class ClusterMonitor {
 	}
 
 	/**
-	 * This function will stop the manager, blocking until it
-	 * is sure that it has finished running.
+	 * This function will stop the manager, blocking until it is sure that it
+	 * has finished running.
 	 */
-	public void stopManager() {
+	public void stopMonitor() {
 
-		System.out.println("Stopping manager...");
-		
+		System.out.println("Stopping monitor...");
+
 		_running.set(false);
-		
+
 		// ensure we don't return until finished running
-		synchronized(_runLock) {
+		synchronized (_runLock) {
 			return;
+		}
+	}
+
+	/**
+	 * Set the available metrics for this cluster.
+	 * 
+	 * @param clusterName
+	 * @param pm
+	 */
+	public void setAvailableMetricsForCluster(String clusterName,
+			PerformanceMetrics pm) {
+		_clusterMetrics.put(clusterName, pm);
+	}
+
+	/**
+	 * Add a rule for the given cluster.
+	 * 
+	 * Example:
+	 * 
+	 * addRuleForCluster("cluster", "load", GREATER_THAN, 1.25, 15*1000,
+	 * ADD_SERVER) will add a new server once the load has been greater than
+	 * 1.25 for 15 seconds.
+	 * 
+	 * @param clusterName
+	 *            - name of the cluster for which this rule applies
+	 * @param metric
+	 *            - the metric associated with this rule
+	 * @param comp
+	 *            - the comparison operator to be used
+	 * @param value
+	 *            - the value to compare against
+	 * @param duration
+	 *            - the number of milliseconds for which this rule must be true
+	 * @param action
+	 *            - the action to take when this rule evaluates to true
+	 */
+	public void addRuleForCluster(String clusterName, String metric,
+			Comparison comp, double value, long duration, Action action) {
+		
+		// verify this cluster exists
+		if (_clusters.containsKey(clusterName)) {
+			_clusters.get(clusterName).addRule(metric, comp, value, duration, action);
 		}
 	}
 

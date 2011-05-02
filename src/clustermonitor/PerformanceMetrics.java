@@ -15,15 +15,15 @@ import java.util.Map.Entry;
  */
 public class PerformanceMetrics {
 
-	private HashMap<String, Double> _metrics;
+	private HashMap<String, MetricCountPair> _metrics;
 	public static final double NO_DATA = Double.NEGATIVE_INFINITY;
 
 	public PerformanceMetrics(String... metrics) {
 
-		_metrics = new HashMap<String, Double>();
+		_metrics = new HashMap<String, MetricCountPair>();
 
 		for (String s : metrics) {
-			_metrics.put(s, NO_DATA);
+			_metrics.put(s, new MetricCountPair());
 		}
 	}
 
@@ -48,11 +48,48 @@ public class PerformanceMetrics {
 	 */
 	public boolean setMetricValue(String metric, double value) {
 		if (_metrics.containsKey(metric)) {
-			_metrics.put(metric, value);
+			_metrics.get(metric).clearValues();
+			_metrics.get(metric).addValue(value);
 			return true;
 		} else {
 			return false;
 		}
+	}
+
+	/**
+	 * Add a value to this metric (average is computed automatically). This will
+	 * *NOT* clear old values (obviously) as opposed to setMetricValue, which
+	 * will clear all previous values.
+	 * 
+	 * @param metric
+	 * @param value
+	 * @return
+	 */
+	public boolean addMetricValue(String metric, double value) {
+		if (_metrics.containsKey(metric)) {
+			_metrics.get(metric).addValue(value);
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	/**
+	 * Add all values from the passed-in {@link PerformanceMetric}s to this
+	 * {@link PerformanceMetrics} instance. Useful when aggregating a number of
+	 * {@link PerformanceMetric} values from a number of different sources (e.g.
+	 * all servers in a cluster)
+	 * 
+	 * @param pm
+	 */
+	public void addMetricValues(PerformanceMetrics pm) {
+
+		String[] metrics = pm.getAvailableMetrics();
+
+		for (String metric : metrics) {
+			this.addMetricValue(metric, pm.getValueForMetric(metric));
+		}
+
 	}
 
 	/**
@@ -65,7 +102,7 @@ public class PerformanceMetrics {
 		ArrayList<String> metrics = new ArrayList<String>();
 
 		for (String s : _metrics.keySet()) {
-			if (_metrics.get(s) != NO_DATA) {
+			if (_metrics.get(s).getValue() != NO_DATA) {
 				metrics.add(s);
 			}
 		}
@@ -90,29 +127,86 @@ public class PerformanceMetrics {
 	 * @return
 	 */
 	public double getValueForMetric(String metric) {
-		if (_metrics.containsKey(metric)) {
-			return _metrics.get(metric);
-		} else {
-			return NO_DATA;
-		}
+		return _metrics.get(metric).getValue();
 	}
 
 	@Override
 	public String toString() {
 		StringBuilder builder = new StringBuilder();
 		builder.append("Performance Metrics:\n\n");
-		
-		for (Entry<String,Double> e : _metrics.entrySet()) {
-			if (e.getValue() != NO_DATA) {
-				builder.append(e.getKey() + ": " + e.getValue() + "\n");
+
+		for (Entry<String, MetricCountPair> e : _metrics.entrySet()) {
+			if (e.getValue().getValue() != NO_DATA) {
+				builder.append(e.getKey() + ": " + e.getValue().getValue() + " (" + e.getValue().getCount() + ")\n");
 			} else {
 				builder.append(e.getKey() + ": -\n");
 			}
 		}
-		
+
 		builder.append("\n");
-		
+
 		return builder.toString();
+	}
+
+	/**
+	 * This class is used so that multiple values can be added to this instance
+	 * of PerformanceMetrics and an average returned.
+	 * 
+	 * @author Walter
+	 * 
+	 */
+	private class MetricCountPair {
+
+		private double _totalValue;
+		private int _count;
+
+		MetricCountPair() {
+			clearValues();
+		}
+
+		/**
+		 * Reset values to 0.
+		 */
+		void clearValues() {
+			_totalValue = 0;
+			_count = 0;
+		}
+
+		/**
+		 * Add a value on to this metric.
+		 * 
+		 * @param value
+		 */
+		void addValue(double value) {
+			_totalValue += value;
+			_count++;
+		}
+
+		/**
+		 * Computes the average value based on the number of metrics passed in.
+		 * If no values are contained within, a value of NO_DATA will be
+		 * returned.
+		 * 
+		 * @return
+		 */
+		double getValue() {
+
+			if (_totalValue == 0) {
+				return NO_DATA;
+			} else {
+				return _totalValue / ((double) _count);
+			}
+		}
+		
+		/**
+		 * Return number of values associated with this metric.
+		 * 
+		 * @return
+		 */
+		int getCount() {
+			return _count;
+		}
+
 	}
 
 }

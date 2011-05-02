@@ -55,7 +55,7 @@ public class FusionServer implements PhysicalHandle {
 		// TODO Auto-generated method stub
 		System.out.println("Getting performance metrics for server: " + _clusterName + "." + _serverName);
 		
-		performanceMetrics.setMetricValue("load-1", 12);
+		performanceMetrics.setMetricValue("load", 12);
 	}
 
 }
