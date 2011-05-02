@@ -17,4 +17,5 @@ if [ $# == 1 ]; then
 	
 else
 	echo "error"
+	exit 1
 fi
