@@ -8,7 +8,7 @@ package clustermonitor;
  * @author Walter
  * 
  */
-public class Server implements Monitorable {
+public class Server implements PhysicalHandle {
 
 	/**
 	 * Whether or not this server is currently running.
@@ -51,8 +51,16 @@ public class Server implements Monitorable {
 		_handle = handle;
 	}
 	
+	boolean isAvailable() {
+		return !_isRunning;
+	}
+	
 	boolean isActive() {
 		return (_isRunning && _isEnabled);
+	}
+	
+	boolean isDisabled() {
+		return !_isEnabled;
 	}
 
 	@Override
@@ -92,6 +100,55 @@ public class Server implements Monitorable {
 	public void getPerformanceMetrics(PerformanceMetrics performanceMetrics) {
 		// TODO Auto-generated method stub
 		_handle.getPerformanceMetrics(performanceMetrics);
+	}
+
+	@Override
+	public String getServerName() {
+		return _serverName;
+	}
+
+	@Override
+	public String getClusterName() {
+		return _cluster.getName();
+	}
+
+	@Override
+	public boolean startServer() {
+		if (_handle.startServer()) {
+			_isRunning = true;
+			_isEnabled = true;
+			return true;
+		}
+		return false;
+	}
+
+	@Override
+	public void stopServer() {
+		_handle.stopServer();
+		_isRunning = false;
+		_isEnabled = false;
+	}
+
+	@Override
+	public boolean enableServer() {
+		if (_handle.enableServer()) {
+			_isRunning = true;
+			_isEnabled = true;
+			return true;
+		}
+		return false;
+	}
+
+	@Override
+	public void disableServer() {
+		_handle.disableServer();
+		_isRunning = true;
+		_isEnabled = false;
+	}
+	
+	@Override
+	public String toString() {
+		return getServerName() + " is " + (_isRunning ? "" : "not ") + "running and is " + (_isEnabled ? "" : "not ") + "enabled.";
 	}
 
 }

@@ -31,7 +31,7 @@ public class FusionServer implements PhysicalHandle {
 	@Override
 	public boolean startServer() {
 		// TODO Auto-generated method stub
-		return false;
+		return true;
 	}
 
 	@Override
@@ -43,7 +43,7 @@ public class FusionServer implements PhysicalHandle {
 	@Override
 	public boolean enableServer() {
 		// TODO Auto-generated method stub
-		return false;
+		return true;
 	}
 
 	@Override
@@ -63,7 +63,7 @@ public class FusionServer implements PhysicalHandle {
 		
 			performanceMetrics.setMetricValue("load", 2);
 		}
-		if (temp > 20 && temp < 120) {
+		if (temp > 20 && temp < 60) {
 			performanceMetrics.setMetricValue("load", 0.4);
 			
 		}

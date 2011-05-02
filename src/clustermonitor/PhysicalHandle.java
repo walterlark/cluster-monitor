@@ -66,5 +66,7 @@ public interface PhysicalHandle extends Monitorable {
 	 * 
 	 */
 	public void disableServer();
+	
+	public void getPerformanceMetrics(PerformanceMetrics performanceMetrics);
 
 }

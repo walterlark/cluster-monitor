@@ -27,7 +27,7 @@ public class ClusterMonitor {
 	/**
 	 * Time in milliseconds between two successive actions on this cluster.
 	 */
-	public static final long ADJUSTMENT_TIME = 60 * 1000;
+	public static final long ADJUSTMENT_TIME = 30 * 1000;
 
 	public ClusterMonitor() {
 		_clusters = new HashMap<String, Cluster>();
