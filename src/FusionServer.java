@@ -1,4 +1,6 @@
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 
 import clustermonitor.PerformanceMetrics;
 import clustermonitor.PhysicalHandle;
@@ -110,6 +112,57 @@ public class FusionServer implements PhysicalHandle {
 		} else {
 			performanceMetrics.setMetricValue("load", 2);
 		}
+	}
+
+	@Override
+	public boolean isRunning() {
+
+		try {
+			Process p = Runtime.getRuntime().exec(
+					"scripts/server_status.py " + _serverName);
+			BufferedReader br = new BufferedReader(new InputStreamReader(
+					p.getInputStream()));
+			String line = br.readLine();
+			if (line == null) {
+				System.err.println("Unable to obtain status of server.");
+				return false;
+			} else {
+				if (line.split(",")[0].compareToIgnoreCase("yes") == 0) {
+					return true;
+				}
+			}
+
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		return false;
+	}
+
+	@Override
+	public boolean isEnabled() {
+		try {
+			Process p = Runtime.getRuntime().exec(
+					"scripts/server_status.py " + _serverName);
+			BufferedReader br = new BufferedReader(new InputStreamReader(
+					p.getInputStream()));
+			String line = br.readLine();
+			if (line == null) {
+				System.err.println("Unable to obtain status of server.");
+				return false;
+			} else {
+				if (line.split(",")[1].compareToIgnoreCase("yes") == 0) {
+					return true;
+				}
+			}
+
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		return false;
 	}
 
 }

@@ -135,11 +135,11 @@ public class ClusterMonitor {
 	 * @param handle
 	 * @param isRunning
 	 */
-	public void addServer(PhysicalHandle handle, boolean isRunning) {
+	public void addServer(PhysicalHandle handle) {
 
 		// make sure the cluster is instantiated
 		Cluster cluster = this.addCluster(handle.getClusterName());
-		Server server = new Server(cluster, handle, isRunning);
+		Server server = new Server(cluster, handle);
 		cluster.addServer(server);
 
 	}

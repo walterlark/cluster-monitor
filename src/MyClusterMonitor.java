@@ -17,8 +17,8 @@ public class MyClusterMonitor {
 		FusionServer apache1 = new FusionServer("apache1", APACHE_CLUSTER);
 		
 		// add servers to monitor
-		monitor.addServer(apache0, true);
-		monitor.addServer(apache1, false);
+		monitor.addServer(apache0);
+		monitor.addServer(apache1);
 		
 		// set available metrics for each cluster
 		monitor.setAvailableMetricsForCluster(APACHE_CLUSTER, new PerformanceMetrics("load", "free-memory"));

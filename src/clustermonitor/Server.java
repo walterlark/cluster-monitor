@@ -42,13 +42,13 @@ public class Server implements PhysicalHandle {
 	 * 
 	 * @param running
 	 */
-	Server(Cluster cluster, PhysicalHandle handle, boolean isRunning) {
+	Server(Cluster cluster, PhysicalHandle handle) {
 		_cluster = cluster;
 		_serverName = handle.getServerName();
-		_isRunning = isRunning;
-		_isEnabled = true; // TODO: maybe assume that this is not always the
-							// case
+		_isRunning = handle.isRunning();
+		_isEnabled = handle.isEnabled();
 		_handle = handle;
+		System.out.println(this);
 	}
 	
 	boolean isAvailable() {
@@ -148,7 +148,17 @@ public class Server implements PhysicalHandle {
 	
 	@Override
 	public String toString() {
-		return getServerName() + " is " + (_isRunning ? "" : "not ") + "running and is " + (_isEnabled ? "" : "not ") + "enabled.";
+		return _cluster.getName() + "." + getServerName() + " is " + (_isRunning ? "" : "not ") + "running and is " + (_isEnabled ? "" : "not ") + "enabled.";
+	}
+
+	@Override
+	public boolean isRunning() {
+		return _handle.isRunning();
+	}
+
+	@Override
+	public boolean isEnabled() {
+		return _handle.isEnabled();
 	}
 
 }
