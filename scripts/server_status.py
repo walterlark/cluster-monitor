@@ -49,4 +49,10 @@ def main(*args):
 	return 1
 
 if __name__ == '__main__':
-	sys.exit(main(*sys.argv))
+	
+	status = 1
+	try:
+		status = main(*sys.argv)
+	except:
+		status = 1
+	sys.exit(status)

@@ -131,22 +131,37 @@ public class FusionServer implements PhysicalHandle {
 
 	@Override
 	public void getPerformanceMetrics(PerformanceMetrics performanceMetrics) {
-		// TODO Auto-generated method stub
-		// System.out.println("Getting performance metrics for server: " +
-		// _clusterName + "." + _serverName);
 
-		temp += 1;
+		try {
+			Process p = Runtime.getRuntime().exec(
+					"scripts/get_load.sh " + _serverName);
+			BufferedReader br = new BufferedReader(new InputStreamReader(
+					p.getInputStream()));
+			String line = br.readLine();
+			if (line == null) {
+				System.err.println("Unable to obtain load of server.");
+				return;
+			} else {
+				// verify that output contains 3 commas and get the second value
+				String[] values = line.split(",");
 
-		if (temp < 20) {
+				if (values.length == 4) {
+					try {
+						double load = Double.parseDouble(values[1]);
+						System.out.println("Load is " + load);
+						performanceMetrics.setMetricValue("load", load);
 
-			performanceMetrics.setMetricValue("load", 2);
+					} catch (NumberFormatException e) {
+						System.err.println("Unable to parse load value as double.");
+						return;
+					}
+				}
+			}
+
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
-		if (temp > 20 && temp < 60) {
-			performanceMetrics.setMetricValue("load", 0.4);
 
-		} else {
-			performanceMetrics.setMetricValue("load", 2);
-		}
 	}
 
 	@Override

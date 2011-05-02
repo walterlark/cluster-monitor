@@ -142,10 +142,12 @@ public class Cluster {
 		// if we want to add a server and have no more
 		if (action == Action.ADD_SERVER && getFreeServerCount() == 0) {
 			System.out.println("No more servers to add!");
+			return;
 		}
 		// if we want to remove a server and only have 1
 		else if (action == Action.REMOVE_SERVER && getActiveServerCount() <= 1) {
 			System.out.println("Can't have less than 1 server.");
+			return;
 		}
 		// add a server
 		else if (action == Action.ADD_SERVER) {
