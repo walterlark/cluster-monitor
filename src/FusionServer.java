@@ -82,13 +82,50 @@ public class FusionServer implements PhysicalHandle {
 
 	@Override
 	public boolean enableServer() {
-		// TODO Auto-generated method stub
-		return true;
+		int rv = 1;
+		try {
+			System.out.println("Enabling server!!!!!");
+			Process p = Runtime.getRuntime().exec(
+					"scripts/enable_server.sh " + _serverName);
+			rv = p.waitFor();
+
+			if (rv != 0) {
+				System.err.println("Unable to enable server!");
+			} else {
+				System.out.println("Server enabled successfully.");
+			}
+
+		} catch (IOException e) {
+			e.printStackTrace();
+			rv = 1;
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+			rv = 1;
+		}
+
+		return (rv == 0);
 	}
 
 	@Override
 	public void disableServer() {
-		// TODO Auto-generated method stub
+
+		try {
+			System.out.println("Disabling server!!!!!");
+			Process p = Runtime.getRuntime().exec(
+					"scripts/disable_server.sh " + _serverName);
+			int rv = p.waitFor();
+
+			if (rv != 0) {
+				System.err.println("Unable to disable server!");
+			} else {
+				System.out.println("Server disabled successfully.");
+			}
+
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
 
 	}
 

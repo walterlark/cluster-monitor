@@ -11,16 +11,6 @@ package clustermonitor;
 public class Server implements PhysicalHandle {
 
 	/**
-	 * Whether or not this server is currently running.
-	 */
-	boolean _isRunning;
-
-	/**
-	 * Whether or not the server is currently accepting new requests.
-	 */
-	boolean _isEnabled;
-
-	/**
 	 * String name of this server.
 	 */
 	String _serverName;
@@ -45,22 +35,20 @@ public class Server implements PhysicalHandle {
 	Server(Cluster cluster, PhysicalHandle handle) {
 		_cluster = cluster;
 		_serverName = handle.getServerName();
-		_isRunning = handle.isRunning();
-		_isEnabled = handle.isEnabled();
 		_handle = handle;
 		System.out.println(this);
 	}
 	
 	boolean isAvailable() {
-		return !_isRunning;
+		return !isRunning();
 	}
 	
 	boolean isActive() {
-		return (_isRunning && _isEnabled);
+		return (isRunning() && isEnabled());
 	}
 	
 	boolean isDisabled() {
-		return !_isEnabled;
+		return !isEnabled();
 	}
 
 	@Override
@@ -115,8 +103,6 @@ public class Server implements PhysicalHandle {
 	@Override
 	public boolean startServer() {
 		if (_handle.startServer()) {
-			_isRunning = true;
-			_isEnabled = true;
 			return true;
 		}
 		return false;
@@ -125,15 +111,18 @@ public class Server implements PhysicalHandle {
 	@Override
 	public void stopServer() {
 		_handle.stopServer();
-		_isRunning = false;
-		_isEnabled = false;
 	}
 
 	@Override
 	public boolean enableServer() {
+		
+		// ensure server is running
+		if (!_handle.startServer()) {
+			return false;
+		}
+		
+		// ensure server is enabled
 		if (_handle.enableServer()) {
-			_isRunning = true;
-			_isEnabled = true;
 			return true;
 		}
 		return false;
@@ -142,13 +131,11 @@ public class Server implements PhysicalHandle {
 	@Override
 	public void disableServer() {
 		_handle.disableServer();
-		_isRunning = true;
-		_isEnabled = false;
 	}
 	
 	@Override
 	public String toString() {
-		return _cluster.getName() + "." + getServerName() + " is " + (_isRunning ? "" : "not ") + "running and is " + (_isEnabled ? "" : "not ") + "enabled.";
+		return _cluster.getName() + "." + getServerName() + " is " + (isRunning() ? "" : "not ") + "running and is " + (isEnabled() ? "" : "not ") + "enabled.";
 	}
 
 	@Override

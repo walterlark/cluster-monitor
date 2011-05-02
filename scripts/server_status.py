@@ -39,7 +39,8 @@ def main(*args):
 					up = "no"
 					active = "no"
 
-				print up + "," + active
+				sys.stdout.write(up + "," + active)
+				sys.stdout.flush()
 				return 0
 		
 		count = count + 1
