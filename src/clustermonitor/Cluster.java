@@ -167,7 +167,7 @@ public class Cluster {
 				
 				// TODO: disable
 				
-				s.disableServer();
+				s.stopServer();
 				
 				// TODO: set a timeout after which this server should be removed
 			} else {
