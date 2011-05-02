@@ -26,11 +26,6 @@ public interface PhysicalHandle extends Monitorable {
 	public String getClusterName();
 
 	/**
-	 * Value used when no load can be obtained.
-	 */
-	public static final double NO_LOAD = -1.0;
-
-	/**
 	 * Start the server up. This method may (and probably should) block.
 	 * 
 	 * @return return true once the server has booted, or if the server is

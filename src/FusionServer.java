@@ -55,7 +55,7 @@ public class FusionServer implements PhysicalHandle {
 	@Override
 	public void getPerformanceMetrics(PerformanceMetrics performanceMetrics) {
 		// TODO Auto-generated method stub
-		System.out.println("Getting performance metrics for server: " + _clusterName + "." + _serverName);
+		//System.out.println("Getting performance metrics for server: " + _clusterName + "." + _serverName);
 		
 		temp += 1;
 		
@@ -64,7 +64,7 @@ public class FusionServer implements PhysicalHandle {
 			performanceMetrics.setMetricValue("load", 2);
 		}
 		if (temp > 20 && temp < 120) {
-			performanceMetrics.setMetricValue("load", 1);
+			performanceMetrics.setMetricValue("load", 0.4);
 			
 		}
 		else {

@@ -17,7 +17,6 @@ public class Rule {
 	private Comparison _comp;
 	private double _value;
 	private long _duration;
-	private long _adjustmentTime;
 	private Action _action;
 
 	/**
@@ -31,13 +30,12 @@ public class Rule {
 	private long _lastActionAt;
 
 	Rule(Cluster cluster, String metric, Comparison comp, double value,
-			long duration, long adjustmentTime, Action action) {
+			long duration, Action action) {
 		_cluster = cluster;
 		_metric = metric;
 		_comp = comp;
 		_value = value;
 		_duration = duration;
-		_adjustmentTime = adjustmentTime;
 		_action = action;
 		_wasTrue = false;
 
@@ -48,11 +46,9 @@ public class Rule {
 	 * otherwise.
 	 * 
 	 * @param pm
-	 * @return
 	 */
 	boolean evaluateRule(PerformanceMetrics pm) {
 
-		boolean returnValue = false;
 		long now = Calendar.getInstance().getTimeInMillis();
 		boolean isTrue = false;
 
@@ -66,20 +62,23 @@ public class Rule {
 		if (!_wasTrue && isTrue) {
 			_trueSince = now;
 		}
-		
+
 		// update value for next time
 		_wasTrue = isTrue;
-		
-		// if it's true, and we haven't evaluated it within the adjustment time, go for it!
-		if (isTrue && (now - _lastActionAt) > _adjustmentTime) {
+
+		// if it's true, and we haven't evaluated it within the adjustment time,
+		// go for it!
+		if (isTrue && (now - _lastActionAt) > ClusterMonitor.ADJUSTMENT_TIME) {
 			if (now - _trueSince > _duration) {
-				returnValue = true;
 				_lastActionAt = now;
-				_wasTrue = false; // make sure it doesn't happen immediately again
+				_wasTrue = false;
+				_cluster.processAction(_action);
+				return true;
 			}
 		}
 
-		return returnValue;
+		return false;
+
 	}
 
 	public long get_duration() {
@@ -104,11 +103,67 @@ public class Rule {
 		}
 
 	}
-	
+
 	@Override
 	public String toString() {
-		String s = "Evaluates to true when " + _metric + " is " + _comp + " " + _value + " for " + _duration + "ms";
+		String s = "Evaluates to true when " + _metric + " is " + _comp + " "
+				+ _value + " for " + _duration + "ms";
 		return s;
 	}
 
+	/**
+	 * If another rule gets set to true, by calling this function, we can ensure
+	 * that this rule will not perform its action until the
+	 * ClusterMonitor.ADJUST_TIME has expired.
+	 */
+	public void setActionOccurred() {
+		_lastActionAt = Calendar.getInstance().getTimeInMillis();
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((_action == null) ? 0 : _action.hashCode());
+		result = prime * result
+				+ ((_cluster == null) ? 0 : _cluster.hashCode());
+		result = prime * result + ((_comp == null) ? 0 : _comp.hashCode());
+		result = prime * result + (int) (_duration ^ (_duration >>> 32));
+		result = prime * result + ((_metric == null) ? 0 : _metric.hashCode());
+		long temp;
+		temp = Double.doubleToLongBits(_value);
+		result = prime * result + (int) (temp ^ (temp >>> 32));
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Rule other = (Rule) obj;
+		if (_action != other._action)
+			return false;
+		if (_cluster == null) {
+			if (other._cluster != null)
+				return false;
+		} else if (!_cluster.equals(other._cluster))
+			return false;
+		if (_comp != other._comp)
+			return false;
+		if (_duration != other._duration)
+			return false;
+		if (_metric == null) {
+			if (other._metric != null)
+				return false;
+		} else if (!_metric.equals(other._metric))
+			return false;
+		if (Double.doubleToLongBits(_value) != Double
+				.doubleToLongBits(other._value))
+			return false;
+		return true;
+	}
 }

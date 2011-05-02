@@ -24,6 +24,11 @@ public class ClusterMonitor {
 	private AtomicBoolean _running;
 	private Object _runLock;
 
+	/**
+	 * Time in milliseconds between two successive actions on this cluster.
+	 */
+	public static final long ADJUSTMENT_TIME = 60 * 1000;
+
 	public ClusterMonitor() {
 		_clusters = new HashMap<String, Cluster>();
 		_running = new AtomicBoolean(false);
@@ -44,7 +49,7 @@ public class ClusterMonitor {
 
 			while (_running.get()) {
 
-				System.out.println("Checking on all clusters...");
+				// System.out.println("Checking on all clusters...");
 
 				for (Cluster c : _clusters.values()) {
 					c.collectMetricsAndEvaluateRules();
@@ -87,7 +92,7 @@ public class ClusterMonitor {
 		if (_clusters.containsKey(clusterName)) {
 			_clusters.get(clusterName).setAvailableMetrics(pm);
 		}
-		
+
 	}
 
 	/**
@@ -109,16 +114,18 @@ public class ClusterMonitor {
 	 *            - the value to compare against
 	 * @param duration
 	 *            - the number of milliseconds for which this rule must be true
-	 * @param adjustmentTime TODO
+	 * @param adjustmentTime
+	 *            TODO
 	 * @param action
 	 *            - the action to take when this rule evaluates to true
 	 */
 	public void addRuleForCluster(String clusterName, String metric,
-			Comparison comp, double value, long duration, long adjustmentTime, Action action) {
-		
+			Comparison comp, double value, long duration, Action action) {
+
 		// verify this cluster exists
 		if (_clusters.containsKey(clusterName)) {
-			_clusters.get(clusterName).addRule(metric, comp, value, duration, adjustmentTime, action);
+			_clusters.get(clusterName).addRule(metric, comp, value, duration,
+					action);
 		}
 	}
 

@@ -24,7 +24,8 @@ public class MyClusterMonitor {
 		monitor.setAvailableMetricsForCluster(APACHE_CLUSTER, new PerformanceMetrics("load", "free-memory"));
 
 		// set rules
-		monitor.addRuleForCluster(APACHE_CLUSTER, "load", Comparison.GREATER_THAN, 1.25, 15*1000, 60*1000, Action.ADD_SERVER);
+		monitor.addRuleForCluster(APACHE_CLUSTER, "load", Comparison.GREATER_THAN, 1.25, 15*1000, Action.ADD_SERVER);
+		monitor.addRuleForCluster(APACHE_CLUSTER, "load", Comparison.LESS_THAN, 0.5, 15*1000, Action.REMOVE_SERVER);
 		
 		// finally, start the monitor
 		monitor.startMonitor();

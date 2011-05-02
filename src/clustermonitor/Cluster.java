@@ -1,6 +1,7 @@
 package clustermonitor;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 
 import clustermonitor.Rule.Action;
 import clustermonitor.Rule.Comparison;
@@ -53,8 +54,8 @@ public class Cluster {
 
 
 	public void addRule(String metric,
-			Comparison comp, double value, long duration, long adjustmentTime, Action action) {
-		Rule r = new Rule(this, metric, comp, value, duration, adjustmentTime, action);
+			Comparison comp, double value, long duration, Action action) {
+		Rule r = new Rule(this, metric, comp, value, duration, action);
 		_ruleManager.addRule(r);
 	}
 
@@ -102,10 +103,14 @@ public class Cluster {
 			}
 		}
 		
-		System.out.println(latestMetrics);
+		//System.out.println(latestMetrics);
 		
 		_ruleManager.processMetrics(latestMetrics);
 
+	}
+	
+	public void processAction(Action action) {
+		System.out.println("Performing " + action + " at time " + Calendar.getInstance().getTimeInMillis());
 	}
 	
 }
