@@ -137,7 +137,7 @@ public class Cluster {
 	public void processAction(Action action) {
 
 		System.out.println("Performing " + action + " at time "
-				+ Calendar.getInstance().getTimeInMillis());
+				+ (Calendar.getInstance().getTimeInMillis() / 1000));
 
 		// if we want to add a server and have no more
 		if (action == Action.ADD_SERVER && getFreeServerCount() == 0) {
