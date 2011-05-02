@@ -2,15 +2,43 @@ package clustermonitor;
 
 import java.util.ArrayList;
 
-public class RuleManager {
+/**
+ * Represents the rule manager for one cluster. Can be used to store rules as well as evaluate when rule conditions are met and the appropriate action should be taken.
+ * @author Walter
+ *
+ */
+class RuleManager {
 
 	private ArrayList<Rule> _rules;
+	private long _metricsTTL;
 	
-	public RuleManager() {
+	RuleManager() {
 		_rules = new ArrayList<Rule>();
+		_metricsTTL = 0;
 	}
 	
-	public void addRule(Rule r) {
+	/**
+	 * Add a rule to the rule manager.
+	 * @param r
+	 */
+	void addRule(Rule r) {
 		_rules.add(r);
+		if (r.get_duration() > _metricsTTL) {
+			_metricsTTL = r.get_duration();
+		}
 	}
+	
+	void processMetrics(PerformanceMetrics pm) {
+		
+		for (Rule r : _rules) {
+			if (r.evaluateRule(pm)) {
+				System.out.println("True: " + r);
+			}
+			else {
+				System.out.println("False: " + r);
+			}
+		}
+		
+	}
+	
 }

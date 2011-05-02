@@ -10,10 +10,12 @@ import clustermonitor.PhysicalHandle;
 public class FusionServer implements PhysicalHandle {
 
 	private  String _serverName, _clusterName;
+	private long temp;
 	
 	public FusionServer(String serverName, String clusterName) {
 		_serverName = serverName;
 		_clusterName = clusterName;
+		temp = 0;
 	}
 	
 	@Override
@@ -55,7 +57,19 @@ public class FusionServer implements PhysicalHandle {
 		// TODO Auto-generated method stub
 		System.out.println("Getting performance metrics for server: " + _clusterName + "." + _serverName);
 		
-		performanceMetrics.setMetricValue("load", 12);
+		temp += 1;
+		
+		if (temp < 20) {
+		
+			performanceMetrics.setMetricValue("load", 2);
+		}
+		if (temp > 20 && temp < 120) {
+			performanceMetrics.setMetricValue("load", 1);
+			
+		}
+		else {
+			performanceMetrics.setMetricValue("load", 2);
+		}
 	}
 
 }

@@ -109,6 +109,10 @@ public class PerformanceMetrics {
 
 		return metrics.toArray(new String[metrics.size()]);
 	}
+	
+	public boolean hasMetric(String metric) {
+		return _metrics.containsKey(metric);
+	}
 
 	/**
 	 * Return an array of all metrics in this instance of PerformanceMetric

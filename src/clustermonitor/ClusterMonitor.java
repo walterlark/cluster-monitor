@@ -21,13 +21,11 @@ public class ClusterMonitor {
 	 * Hold the clusters active in the system.
 	 */
 	private HashMap<String, Cluster> _clusters;
-	private HashMap<String, PerformanceMetrics> _clusterMetrics;
 	private AtomicBoolean _running;
 	private Object _runLock;
 
 	public ClusterMonitor() {
 		_clusters = new HashMap<String, Cluster>();
-		_clusterMetrics = new HashMap<String, PerformanceMetrics>();
 		_running = new AtomicBoolean(false);
 		_runLock = new Object();
 	}
@@ -49,17 +47,7 @@ public class ClusterMonitor {
 				System.out.println("Checking on all clusters...");
 
 				for (Cluster c : _clusters.values()) {
-
-					if (_clusterMetrics.containsKey(c.getName())) {
-						PerformanceMetrics pm = new PerformanceMetrics(
-								_clusterMetrics.get(c.getName()));
-						c.getPerformanceMetrics(pm);
-						System.out.println(pm);
-					} else {
-						System.err
-								.println("No available metrics set for cluster "
-										+ c.getName());
-					}
+					c.collectMetricsAndEvaluateRules();
 				}
 
 				try {
@@ -96,7 +84,10 @@ public class ClusterMonitor {
 	 */
 	public void setAvailableMetricsForCluster(String clusterName,
 			PerformanceMetrics pm) {
-		_clusterMetrics.put(clusterName, pm);
+		if (_clusters.containsKey(clusterName)) {
+			_clusters.get(clusterName).setAvailableMetrics(pm);
+		}
+		
 	}
 
 	/**
@@ -118,15 +109,16 @@ public class ClusterMonitor {
 	 *            - the value to compare against
 	 * @param duration
 	 *            - the number of milliseconds for which this rule must be true
+	 * @param adjustmentTime TODO
 	 * @param action
 	 *            - the action to take when this rule evaluates to true
 	 */
 	public void addRuleForCluster(String clusterName, String metric,
-			Comparison comp, double value, long duration, Action action) {
+			Comparison comp, double value, long duration, long adjustmentTime, Action action) {
 		
 		// verify this cluster exists
 		if (_clusters.containsKey(clusterName)) {
-			_clusters.get(clusterName).addRule(metric, comp, value, duration, action);
+			_clusters.get(clusterName).addRule(metric, comp, value, duration, adjustmentTime, action);
 		}
 	}
 
