@@ -1,9 +1,4 @@
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLConnection;
 
 import clustermonitor.PerformanceMetrics;
 import clustermonitor.PhysicalHandle;
@@ -44,6 +39,12 @@ public class FusionServer implements PhysicalHandle {
 					"scripts/start_server.sh " + _serverName);
 			rv = p.waitFor();
 
+			if (rv != 0) {
+				System.err.println("Unable to start server!");
+			} else {
+				System.out.println("Server started successfully.");
+			}
+
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -61,8 +62,18 @@ public class FusionServer implements PhysicalHandle {
 			System.out.println("Stopping server!!!!!");
 			Process p = Runtime.getRuntime().exec(
 					"scripts/stop_server.sh " + _serverName);
+			int rv = p.waitFor();
+
+			if (rv != 0) {
+				System.err.println("Unable to stop server!");
+			} else {
+				System.out.println("Server stopped successfully.");
+			}
 
 		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
