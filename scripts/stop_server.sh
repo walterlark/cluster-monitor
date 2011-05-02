@@ -10,12 +10,26 @@ if [ $# == 1 ]; then
 		exit 1
 	fi
 
-	# verify server has stopped
-
-	# return with exit status
-	exit 0
+	# move to directory where this script is
+	path=$0
+	folder=${path/"stop_server.sh"/""} 
+	cd $folder
+	
+	# run status script
+	status=`./server_status.py $1`
+	
+	# if no output, return 1
+	if [ $? != 0 ]; then
+		exit 1
+	fi
+	
+	# return exit status
+	if [ $status = "no,no" ] || [ $status = "no,yes" ]; then
+		exit 0
+	else
+		exit 1
+	fi
 	
 else
-	echo "error"
 	exit 1
 fi
