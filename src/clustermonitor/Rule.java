@@ -68,7 +68,7 @@ public class Rule {
 
 		// if it's true, and we haven't evaluated it within the adjustment time,
 		// go for it!
-		if (isTrue && (now - _lastActionAt) > ClusterMonitor.ADJUSTMENT_TIME) {
+		if (isTrue && (now - _lastActionAt) > ClusterMonitorConstants.ADJUSTMENT_TIME) {
 			if (now - _trueSince > _duration) {
 				_lastActionAt = now;
 				_wasTrue = false;

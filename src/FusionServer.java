@@ -14,12 +14,10 @@ import clustermonitor.PhysicalHandle;
 public class FusionServer implements PhysicalHandle {
 
 	private String _serverName, _clusterName;
-	private long temp;
 
 	public FusionServer(String serverName, String clusterName) {
 		_serverName = serverName;
 		_clusterName = clusterName;
-		temp = 0;
 	}
 
 	@Override

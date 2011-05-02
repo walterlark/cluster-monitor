@@ -24,11 +24,6 @@ public class ClusterMonitor {
 	private AtomicBoolean _running;
 	private Object _runLock;
 
-	/**
-	 * Time in milliseconds between two successive actions on this cluster.
-	 */
-	public static final long ADJUSTMENT_TIME = 30 * 1000;
-
 	public ClusterMonitor() {
 		_clusters = new HashMap<String, Cluster>();
 		_running = new AtomicBoolean(false);
