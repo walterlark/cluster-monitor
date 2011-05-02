@@ -48,11 +48,11 @@ public class FusionServer implements PhysicalHandle {
 			}
 
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
+			rv = 1;
 		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
+			rv = 1;
 		}
 
 		return (rv == 0);
@@ -73,10 +73,8 @@ public class FusionServer implements PhysicalHandle {
 			}
 
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
@@ -133,7 +131,6 @@ public class FusionServer implements PhysicalHandle {
 			}
 
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
@@ -158,7 +155,6 @@ public class FusionServer implements PhysicalHandle {
 			}
 
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
