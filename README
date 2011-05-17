@@ -1,9 +1,9 @@
 ClusterMonitor
 ==============
 
-ClusterMonitor monitors a cluster of computers and determines, based on available system metrics, when machines be taken online or brought offline. This is particulary useful when dealing with cloud applications where servers can be rented hourly and excess server capacity is a waste of money.
+There exist many cloud-computing platforms, such as Amazon’s EC2, which allow the developer to quickly add and remove server instances on an hourly basis. Despite this capability, there is still no widespread solution for automating the scaling process, instead requiring periodic monitoring and human intervention to add or remove instances. I propose a solution to respond to an increase or decrease in traffic through the use of user-configurable rules to avoid the need for human intervention beyond the initial setup. The result is the potential for significant savings, both in time and money, for the developer.
 
 Usage
 -----
 
-In order to ensure capatability with a wide range of setups, the actual interactions with the physical machines / VMMs / providers are abstracted out. The client application must implement a number of methods such as startServer() and stopServer() in order to allow the ClusterMonitor to control physical machines.
+In order to take advantage of ClusterMonitor, the developer must implement three basic things. First is an interface between ClusterMonitor and the cloud computing provider. This is necessary to allow ClusterMonitor to add instances to and remove instances from the cluster. Second is an interface between ClusterMonitor and the individual instances. This is necessary to allow ClusterMonitor to get system performance metrics. Finally, a set of rules must be input that determine what conditions must be met for ClusterMonitor to add and remove instances from the cluster.
