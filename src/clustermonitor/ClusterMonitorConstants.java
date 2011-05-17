@@ -11,6 +11,6 @@ public interface ClusterMonitorConstants {
 	/**
 	 * Time in milliseconds between two successive actions on this cluster.
 	 */
-	public static final long ADJUSTMENT_TIME = 60 * 1000;
+	public static final long ADJUSTMENT_TIME = 180 * 1000;
 
 }
